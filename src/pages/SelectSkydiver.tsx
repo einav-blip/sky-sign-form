@@ -1,0 +1,116 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { ArrowRight } from "lucide-react";
+
+interface Skydiver {
+  id: string;
+  full_name: string;
+  phone_number: string;
+}
+
+const SelectSkydiver = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const phoneNumber = searchParams.get("phone");
+  
+  const [skydivers, setSkydivers] = useState<Skydiver[]>([]);
+  const [selectedSkydiverId, setSelectedSkydiverId] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!phoneNumber) {
+      navigate("/");
+      return;
+    }
+
+    fetchSkydivers();
+  }, [phoneNumber, navigate]);
+
+  const fetchSkydivers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("skydivers")
+        .select("*")
+        .eq("phone_number", phoneNumber);
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        toast.error("לא נמצאו צונחים");
+        navigate("/");
+        return;
+      }
+
+      setSkydivers(data);
+      
+      // If only one skydiver, auto-select and navigate
+      if (data.length === 1) {
+        navigate(`/review-details/${data[0].id}`);
+      }
+    } catch (error) {
+      console.error("Error fetching skydivers:", error);
+      toast.error("שגיאה בטעינת הנתונים");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleContinue = () => {
+    if (!selectedSkydiverId) {
+      toast.error("נא לבחור צונח");
+      return;
+    }
+    navigate(`/review-details/${selectedSkydiverId}`);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg">טוען...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/20 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold">בחר צונח</CardTitle>
+          <CardDescription>
+            נמצאו {skydivers.length} צונחים עם מספר טלפון זה
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Select value={selectedSkydiverId} onValueChange={setSelectedSkydiverId}>
+              <SelectTrigger className="h-12 text-lg">
+                <SelectValue placeholder="בחר את שמך" />
+              </SelectTrigger>
+              <SelectContent>
+                {skydivers.map((skydiver) => (
+                  <SelectItem key={skydiver.id} value={skydiver.id} className="text-lg">
+                    {skydiver.full_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button 
+            onClick={handleContinue} 
+            className="w-full h-12 text-lg"
+            disabled={!selectedSkydiverId}
+          >
+            המשך <ArrowRight className="mr-2 h-5 w-5" />
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default SelectSkydiver;
