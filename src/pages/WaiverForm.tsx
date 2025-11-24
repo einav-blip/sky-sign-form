@@ -1,15 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
 import { adultWaiverText } from "@/data/waiverTexts";
+import { supabase } from "@/integrations/supabase/client";
 
 const WaiverForm = () => {
   const { skydiverId } = useParams();
   const navigate = useNavigate();
   const [signature, setSignature] = useState("");
+  const [skydiverName, setSkydiverName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSkydiverName = async () => {
+      if (!skydiverId) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from("skydivers")
+          .select("full_name")
+          .eq("id", skydiverId)
+          .single();
+
+        if (error) throw error;
+        if (data) setSkydiverName(data.full_name);
+      } catch (error) {
+        console.error("Error fetching skydiver:", error);
+        toast.error("שגיאה בטעינת פרטי הצונח");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSkydiverName();
+  }, [skydiverId]);
 
   const handleContinue = () => {
     if (!signature) {
@@ -18,6 +45,20 @@ const WaiverForm = () => {
     }
     navigate(`/weight-confirmation/${skydiverId}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg">טוען...</p>
+      </div>
+    );
+  }
+
+  // Replace the underline with the skydiver's name
+  const waiverContent = adultWaiverText.waiverDeclaration.content.replace(
+    "אני הח\"מ: _______________________________",
+    `אני הח"מ: ${skydiverName}`
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-4 py-8">
@@ -40,7 +81,7 @@ const WaiverForm = () => {
           <div className="space-y-4 border-t pt-8">
             <h2 className="text-xl font-bold">{adultWaiverText.waiverDeclaration.title}</h2>
             <div className="prose prose-sm max-w-none bg-muted/50 p-6 rounded-lg max-h-96 overflow-y-auto whitespace-pre-wrap">
-              {adultWaiverText.waiverDeclaration.content}
+              {waiverContent}
             </div>
           </div>
 
