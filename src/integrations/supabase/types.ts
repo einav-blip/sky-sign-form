@@ -91,6 +91,7 @@ export type Database = {
           emergency_contact_phone: string | null
           full_name: string
           id: string
+          id_number: string | null
           phone_number: string
           updated_at: string | null
           weight: number | null
@@ -103,6 +104,7 @@ export type Database = {
           emergency_contact_phone?: string | null
           full_name: string
           id?: string
+          id_number?: string | null
           phone_number: string
           updated_at?: string | null
           weight?: number | null
@@ -115,6 +117,7 @@ export type Database = {
           emergency_contact_phone?: string | null
           full_name?: string
           id?: string
+          id_number?: string | null
           phone_number?: string
           updated_at?: string | null
           weight?: number | null
