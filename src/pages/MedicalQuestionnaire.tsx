@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
+import { adultWaiverText } from "@/data/waiverTexts";
 
 interface MedicalQuestion {
   id: string;
@@ -23,13 +24,15 @@ const MedicalQuestionnaire = () => {
   const navigate = useNavigate();
   const [signature, setSignature] = useState("");
   
-  const [questions, setQuestions] = useState<MedicalQuestion[]>([
-    { id: "1", question: "האם אתה סובל ממחלות לב?", answer: "", details: "", date: "" },
-    { id: "2", question: "האם אתה סובל מבעיות נשימה או אסטמה?", answer: "", details: "", date: "" },
-    { id: "3", question: "האם אתה נוטל תרופות קבועות?", answer: "", details: "", date: "" },
-    { id: "4", question: "האם עברת ניתוחים בשנה האחרונה?", answer: "", details: "", date: "" },
-    { id: "5", question: "האם יש לך בעיות גב או צוואר?", answer: "", details: "", date: "" },
-  ]);
+  const [questions, setQuestions] = useState<MedicalQuestion[]>(
+    adultWaiverText.healthDeclaration.questions.map((q, idx) => ({
+      id: String(idx + 1),
+      question: q,
+      answer: "",
+      details: "",
+      date: ""
+    }))
+  );
 
   const updateQuestion = (id: string, field: keyof MedicalQuestion, value: string) => {
     setQuestions(questions.map(q => 
@@ -92,7 +95,8 @@ const MedicalQuestionnaire = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-4 py-8">
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl">שאלון רפואי</CardTitle>
+          <CardTitle className="text-2xl">{adultWaiverText.healthDeclaration.title}</CardTitle>
+          <p className="text-muted-foreground mt-2">{adultWaiverText.healthDeclaration.intro}</p>
         </CardHeader>
         <CardContent className="space-y-8">
           {questions.map((question) => (
