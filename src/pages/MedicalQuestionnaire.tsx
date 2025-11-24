@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { adultWaiverText } from "@/data/waiverTexts";
 
 interface MedicalQuestion {
@@ -95,8 +95,20 @@ const MedicalQuestionnaire = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-4 py-8">
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl">{adultWaiverText.healthDeclaration.title}</CardTitle>
-          <p className="text-muted-foreground mt-2">{adultWaiverText.healthDeclaration.intro}</p>
+          <div className="flex items-center gap-4">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div className="flex-1">
+              <CardTitle className="text-2xl">{adultWaiverText.healthDeclaration.title}</CardTitle>
+              <p className="text-muted-foreground mt-2">{adultWaiverText.healthDeclaration.intro}</p>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-8">
           {questions.map((question) => (

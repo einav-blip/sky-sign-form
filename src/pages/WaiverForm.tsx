@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { adultWaiverText } from "@/data/waiverTexts";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,21 +12,25 @@ const WaiverForm = () => {
   const navigate = useNavigate();
   const [signature, setSignature] = useState("");
   const [skydiverName, setSkydiverName] = useState("");
+  const [idNumber, setIdNumber] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSkydiverName = async () => {
+    const fetchSkydiverInfo = async () => {
       if (!skydiverId) return;
       
       try {
         const { data, error } = await supabase
           .from("skydivers")
-          .select("full_name")
+          .select("full_name, id_number")
           .eq("id", skydiverId)
           .single();
 
         if (error) throw error;
-        if (data) setSkydiverName(data.full_name);
+        if (data) {
+          setSkydiverName(data.full_name);
+          setIdNumber(data.id_number || "");
+        }
       } catch (error) {
         console.error("Error fetching skydiver:", error);
         toast.error("שגיאה בטעינת פרטי הצונח");
@@ -35,7 +39,7 @@ const WaiverForm = () => {
       }
     };
 
-    fetchSkydiverName();
+    fetchSkydiverInfo();
   }, [skydiverId]);
 
   const handleContinue = () => {
@@ -54,17 +58,27 @@ const WaiverForm = () => {
     );
   }
 
-  // Replace the underline with the skydiver's name
+  // Replace the underline with the skydiver's name and ID number
   const waiverContent = adultWaiverText.waiverDeclaration.content.replace(
     "אני הח\"מ: _______________________________",
-    `אני הח"מ: ${skydiverName}`
+    `אני הח"מ: ${skydiverName}, ת.ז ${idNumber || "_______"}`
   );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-4 py-8">
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl">{adultWaiverText.personalDetails.title}</CardTitle>
+          <div className="flex items-center gap-4">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <CardTitle className="text-2xl">{adultWaiverText.personalDetails.title}</CardTitle>
+          </div>
         </CardHeader>
         <CardContent className="space-y-8">
           {/* Risk Statistics Section */}

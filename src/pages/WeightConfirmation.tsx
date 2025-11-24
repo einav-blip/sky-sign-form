@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArrowRight, AlertTriangle } from "lucide-react";
+import { ArrowRight, ArrowLeft, AlertTriangle } from "lucide-react";
 
 const WeightConfirmation = () => {
   const { skydiverId } = useParams();
@@ -70,7 +70,17 @@ const WeightConfirmation = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/20 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl text-center">אישור משקל</CardTitle>
+          <div className="flex items-center gap-4">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <CardTitle className="text-2xl text-center flex-1">אישור משקל</CardTitle>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <Alert variant="destructive">
