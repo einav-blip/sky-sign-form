@@ -35,6 +35,7 @@ const LanguageSelection = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-sky-100 to-blue-200">
+
       <Card className="w-full max-w-md">
         <CardHeader>
           {hasHistory && (
