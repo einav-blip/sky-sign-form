@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translations } from "@/data/translations";
 import SignaturePad from "@/components/SignaturePad";
+import { format, parseISO } from "date-fns";
 
 const WaiverForm = () => {
   const { skydiverId } = useParams();
@@ -83,6 +84,9 @@ const WaiverForm = () => {
   // Replace signature line based on language
   let waiverContent = waiverText.waiverDeclaration.content;
   
+  // Format date of birth to dd/MM/yyyy
+  const formattedDateOfBirth = dateOfBirth ? format(parseISO(dateOfBirth), "dd/MM/yyyy") : "";
+  
   // For Hebrew, replace the specific signature line and date of birth
   if (language === 'he') {
     waiverContent = waiverContent.replace(
@@ -91,11 +95,11 @@ const WaiverForm = () => {
     );
     waiverContent = waiverContent.replace(
       "תאריך לידה: __________________",
-      `תאריך לידה: ${dateOfBirth}`
+      `תאריך לידה: ${formattedDateOfBirth}`
     );
   } else {
     // For other languages, add signature info at the beginning
-    waiverContent = `I, the undersigned: ${skydiverName}${idNumber ? `, ID: ${idNumber}` : ""}${dateOfBirth ? `, Date of Birth: ${dateOfBirth}` : ""}\n\n${waiverContent}`;
+    waiverContent = `I, the undersigned: ${skydiverName}${idNumber ? `, ID: ${idNumber}` : ""}${formattedDateOfBirth ? `, Date of Birth: ${formattedDateOfBirth}` : ""}\n\n${waiverContent}`;
   }
 
   return (
