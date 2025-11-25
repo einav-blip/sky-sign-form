@@ -87,19 +87,56 @@ const WaiverForm = () => {
   // Format date of birth to dd/MM/yyyy
   const formattedDateOfBirth = dateOfBirth ? format(parseISO(dateOfBirth), "dd/MM/yyyy") : "";
   
-  // For Hebrew, replace the specific signature line and date of birth
-  if (language === 'he') {
-    waiverContent = waiverContent.replace(
-      "אני הח\"מ _______",
-      `אני הח"מ ${skydiverName}${idNumber ? `, ת.ז ${idNumber}` : ""}`
-    );
-    waiverContent = waiverContent.replace(
-      "תאריך לידה: __________________",
-      `תאריך לידה: ${formattedDateOfBirth}`
-    );
-  } else {
-    // For other languages, add signature info at the beginning
-    waiverContent = `I, the undersigned: ${skydiverName}${idNumber ? `, ID: ${idNumber}` : ""}${formattedDateOfBirth ? `, Date of Birth: ${formattedDateOfBirth}` : ""}\n\n${waiverContent}`;
+  // Language-specific replacements for the signature line
+  const signatureReplacements: Record<string, { namePattern: string; dobPattern: string; nameFormat: string; dobFormat: string }> = {
+    he: {
+      namePattern: "אני הח\"מ _______",
+      dobPattern: "תאריך לידה: __________________",
+      nameFormat: `אני הח"מ ${skydiverName}${idNumber ? `, ת.ז ${idNumber}` : ""}`,
+      dobFormat: `תאריך לידה: ${formattedDateOfBirth}`
+    },
+    en: {
+      namePattern: "I, the undersigned _______",
+      dobPattern: "Date of Birth: __________________",
+      nameFormat: `I, the undersigned ${skydiverName}${idNumber ? `, ID: ${idNumber}` : ""}`,
+      dobFormat: `Date of Birth: ${formattedDateOfBirth}`
+    },
+    ru: {
+      namePattern: "Я, нижеподписавшийся _______",
+      dobPattern: "Дата рождения: __________________",
+      nameFormat: `Я, нижеподписавшийся ${skydiverName}${idNumber ? `, удостоверение личности: ${idNumber}` : ""}`,
+      dobFormat: `Дата рождения: ${formattedDateOfBirth}`
+    },
+    fr: {
+      namePattern: "Je soussigné(e) _______",
+      dobPattern: "Date de naissance : __________________",
+      nameFormat: `Je soussigné(e) ${skydiverName}${idNumber ? `, N° d'identité: ${idNumber}` : ""}`,
+      dobFormat: `Date de naissance : ${formattedDateOfBirth}`
+    },
+    ar: {
+      namePattern: "أنا الموقع أدناه _______",
+      dobPattern: "تاريخ الميلاد: __________________",
+      nameFormat: `أنا الموقع أدناه ${skydiverName}${idNumber ? `، رقم الهوية: ${idNumber}` : ""}`,
+      dobFormat: `تاريخ الميلاد: ${formattedDateOfBirth}`
+    },
+    it: {
+      namePattern: "Io sottoscritto/a _______",
+      dobPattern: "Data di nascita: __________________",
+      nameFormat: `Io sottoscritto/a ${skydiverName}${idNumber ? `, Documento d'identità: ${idNumber}` : ""}`,
+      dobFormat: `Data di nascita: ${formattedDateOfBirth}`
+    },
+    es: {
+      namePattern: "Yo, el/la abajo firmante _______",
+      dobPattern: "Fecha de nacimiento: __________________",
+      nameFormat: `Yo, el/la abajo firmante ${skydiverName}${idNumber ? `, N° de identidad: ${idNumber}` : ""}`,
+      dobFormat: `Fecha de nacimiento: ${formattedDateOfBirth}`
+    }
+  };
+
+  const replacement = signatureReplacements[language];
+  if (replacement) {
+    waiverContent = waiverContent.replace(replacement.namePattern, replacement.nameFormat);
+    waiverContent = waiverContent.replace(replacement.dobPattern, replacement.dobFormat);
   }
 
   return (
