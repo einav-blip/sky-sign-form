@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,10 +22,26 @@ interface MedicalQuestion {
 const MedicalQuestionnaire = () => {
   const { skydiverId } = useParams();
   const navigate = useNavigate();
-  const [signature, setSignature] = useState("");
+  
+  // Load saved data from localStorage
+  const loadSavedData = () => {
+    const saved = localStorage.getItem(`medical_questionnaire_${skydiverId}`);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Error parsing saved data:", e);
+      }
+    }
+    return null;
+  };
+
+  const savedData = loadSavedData();
+  
+  const [signature, setSignature] = useState(savedData?.signature || "");
   
   const [questions, setQuestions] = useState<MedicalQuestion[]>(
-    adultWaiverText.healthDeclaration.questions.map((q, idx) => ({
+    savedData?.questions || adultWaiverText.healthDeclaration.questions.map((q, idx) => ({
       id: String(idx + 1),
       question: q,
       answer: "",
@@ -35,10 +51,26 @@ const MedicalQuestionnaire = () => {
   );
 
   const updateQuestion = (id: string, field: keyof MedicalQuestion, value: string) => {
-    setQuestions(questions.map(q => 
-      q.id === id ? { ...q, [field]: value } : q
-    ));
+    setQuestions(prev => {
+      const updated = prev.map(q => 
+        q.id === id ? { ...q, [field]: value } : q
+      );
+      // Save to localStorage whenever questions are updated
+      localStorage.setItem(`medical_questionnaire_${skydiverId}`, JSON.stringify({
+        questions: updated,
+        signature
+      }));
+      return updated;
+    });
   };
+
+  // Save to localStorage whenever signature changes
+  useEffect(() => {
+    localStorage.setItem(`medical_questionnaire_${skydiverId}`, JSON.stringify({
+      questions,
+      signature
+    }));
+  }, [signature, skydiverId, questions]);
 
   const handleSubmit = async () => {
     // Check if all questions are answered
@@ -68,7 +100,7 @@ const MedicalQuestionnaire = () => {
         .from("waiver_submissions")
         .insert([{
           skydiver_id: skydiverId!,
-          waiver_signature: signature,
+          waiver_signature: localStorage.getItem(`waiver_signature_${skydiverId}`) || signature,
           weight_confirmed: skydiverData?.weight || 0,
           medical_questions: questions as any,
           medical_signature: signature,
@@ -77,6 +109,10 @@ const MedicalQuestionnaire = () => {
         }]);
 
       if (error) throw error;
+
+      // Clear saved data from localStorage after successful submission
+      localStorage.removeItem(`waiver_signature_${skydiverId}`);
+      localStorage.removeItem(`medical_questionnaire_${skydiverId}`);
 
       if (hasYesAnswers) {
         toast.success("תשובותיך נשמרו. צוות המועדון יצור איתך קשר בקרוב");
