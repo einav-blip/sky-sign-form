@@ -3,10 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLanguage, Language } from "@/contexts/LanguageContext";
 import { translations } from "@/data/translations";
+import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const LanguageSelection = () => {
   const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
+  const [hasHistory, setHasHistory] = useState(false);
+
+  useEffect(() => {
+    // Check if there's navigation history
+    setHasHistory(window.history.length > 1);
+  }, []);
 
   const languages: { code: Language; name: string; nativeName: string }[] = [
     { code: 'he', name: 'Hebrew', nativeName: 'עברית' },
@@ -27,6 +35,17 @@ const LanguageSelection = () => {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-sky-100 to-blue-200">
       <Card className="w-full max-w-md">
         <CardHeader>
+          {hasHistory && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              className="absolute right-4 top-4"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          )}
           <CardTitle className="text-2xl text-center">{t.selectLanguage}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">

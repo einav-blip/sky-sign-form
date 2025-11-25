@@ -6,11 +6,16 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/data/translations";
 
 const PhoneEntry = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const t = translations[language];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +56,15 @@ const PhoneEntry = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/20 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            className="absolute right-4 top-4"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           <CardTitle className="text-3xl font-bold">מערכת וויברים</CardTitle>
           <CardDescription className="text-lg">
             ברוכים הבאים למועדון הצניחה

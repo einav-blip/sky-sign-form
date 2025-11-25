@@ -10,7 +10,11 @@ import { supabase } from "@/integrations/supabase/client";
 const WaiverForm = () => {
   const { skydiverId } = useParams();
   const navigate = useNavigate();
-  const [signature, setSignature] = useState("");
+  const [signature, setSignature] = useState(() => {
+    // Load saved signature from localStorage
+    const saved = localStorage.getItem(`waiver_signature_${skydiverId}`);
+    return saved || "";
+  });
   const [skydiverName, setSkydiverName] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -47,8 +51,17 @@ const WaiverForm = () => {
       toast.error("נא לחתום על הטופס");
       return;
     }
+    // Save signature to localStorage
+    localStorage.setItem(`waiver_signature_${skydiverId}`, signature);
     navigate(`/weight-confirmation/${skydiverId}`);
   };
+
+  // Save signature to localStorage whenever it changes
+  useEffect(() => {
+    if (signature) {
+      localStorage.setItem(`waiver_signature_${skydiverId}`, signature);
+    }
+  }, [signature, skydiverId]);
 
   if (isLoading) {
     return (
