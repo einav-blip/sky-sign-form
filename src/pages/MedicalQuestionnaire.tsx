@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import { adultWaiverText } from "@/data/waiverTexts";
+import { waiverTexts } from "@/data/waiverTexts";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/data/translations";
 
 interface MedicalQuestion {
   id: string;
@@ -22,6 +24,9 @@ interface MedicalQuestion {
 const MedicalQuestionnaire = () => {
   const { skydiverId } = useParams();
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const t = translations[language];
+  const healthDeclaration = waiverTexts[language].healthDeclaration;
   
   // Load saved data from localStorage
   const loadSavedData = () => {
@@ -41,7 +46,7 @@ const MedicalQuestionnaire = () => {
   const [signature, setSignature] = useState(savedData?.signature || "");
   
   const [questions, setQuestions] = useState<MedicalQuestion[]>(
-    savedData?.questions || adultWaiverText.healthDeclaration.questions.map((q, idx) => ({
+    savedData?.questions || healthDeclaration.questions.map((q, idx) => ({
       id: String(idx + 1),
       question: q,
       answer: "",
@@ -76,12 +81,12 @@ const MedicalQuestionnaire = () => {
     // Check if all questions are answered
     const allAnswered = questions.every(q => q.answer);
     if (!allAnswered) {
-      toast.error("נא לענות על כל השאלות");
+      toast.error(t.error);
       return;
     }
 
     if (!signature) {
-      toast.error("נא לחתום על ההצהרה");
+      toast.error(t.signature);
       return;
     }
 
@@ -115,15 +120,15 @@ const MedicalQuestionnaire = () => {
       localStorage.removeItem(`medical_questionnaire_${skydiverId}`);
 
       if (hasYesAnswers) {
-        toast.success("תשובותיך נשמרו. צוות המועדון יצור איתך קשר בקרוב");
+        toast.success(t.success);
         navigate("/");
       } else {
-        toast.success("הטפסים הושלמו בהצלחה!");
+        toast.success(t.success);
         navigate(`/completion/${skydiverId}`);
       }
     } catch (error) {
       console.error("Error submitting questionnaire:", error);
-      toast.error("שגיאה בשמירת השאלון");
+      toast.error(t.error);
     }
   };
 
@@ -141,8 +146,8 @@ const MedicalQuestionnaire = () => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex-1">
-              <CardTitle className="text-2xl">{adultWaiverText.healthDeclaration.title}</CardTitle>
-              <p className="text-muted-foreground mt-2">{adultWaiverText.healthDeclaration.intro}</p>
+              <CardTitle className="text-2xl">{healthDeclaration.title}</CardTitle>
+              <p className="text-muted-foreground mt-2">{healthDeclaration.intro}</p>
             </div>
           </div>
         </CardHeader>
@@ -158,29 +163,29 @@ const MedicalQuestionnaire = () => {
               >
                 <div className="flex items-center space-x-2 space-x-reverse">
                   <RadioGroupItem value="no" id={`${question.id}-no`} />
-                  <Label htmlFor={`${question.id}-no`} className="cursor-pointer">לא</Label>
+                  <Label htmlFor={`${question.id}-no`} className="cursor-pointer">{t.no}</Label>
                 </div>
                 <div className="flex items-center space-x-2 space-x-reverse">
                   <RadioGroupItem value="yes" id={`${question.id}-yes`} />
-                  <Label htmlFor={`${question.id}-yes`} className="cursor-pointer">כן</Label>
+                  <Label htmlFor={`${question.id}-yes`} className="cursor-pointer">{t.yes}</Label>
                 </div>
               </RadioGroup>
 
               {question.answer === "yes" && (
                 <div className="space-y-4 pr-8">
                   <div className="space-y-2">
-                    <Label htmlFor={`${question.id}-details`}>פרט (אופציונלי)</Label>
+                    <Label htmlFor={`${question.id}-details`}>{t.details}</Label>
                     <Textarea
                       id={`${question.id}-details`}
                       value={question.details}
                       onChange={(e) => updateQuestion(question.id, "details", e.target.value)}
-                      placeholder="ניתן להוסיף פרטים נוספים"
+                      placeholder={t.details}
                       className="min-h-20"
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor={`${question.id}-date`}>תאריך (אופציונלי)</Label>
+                    <Label htmlFor={`${question.id}-date`}>{t.date}</Label>
                     <Input
                       id={`${question.id}-date`}
                       type="date"
@@ -195,11 +200,11 @@ const MedicalQuestionnaire = () => {
           ))}
 
           <div className="space-y-4 border-t pt-6">
-            <h3 className="text-lg font-semibold">חתימה על הצהרת הבריאות</h3>
+            <h3 className="text-lg font-semibold">{t.signature}</h3>
             <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-4 min-h-[150px] bg-background">
               <input
                 type="text"
-                placeholder="החתימה שלך כאן (זמני - יוחלף בקומפוננט חתימה)"
+                placeholder={t.signature}
                 value={signature}
                 onChange={(e) => setSignature(e.target.value)}
                 className="w-full text-2xl font-signature text-center bg-transparent outline-none"
@@ -212,7 +217,7 @@ const MedicalQuestionnaire = () => {
             className="w-full h-12 text-lg"
             disabled={!questions.every(q => q.answer) || !signature}
           >
-            סיום והגשה <ArrowRight className="mr-2 h-5 w-5" />
+            {t.submit} <ArrowRight className="mr-2 h-5 w-5" />
           </Button>
         </CardContent>
       </Card>
