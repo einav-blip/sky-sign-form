@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowRight, ArrowLeft } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/data/translations";
 
 interface Skydiver {
   id: string;
@@ -17,6 +19,8 @@ const SelectSkydiver = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const phoneNumber = searchParams.get("phone");
+  const { language } = useLanguage();
+  const t = translations[language];
   
   const [skydivers, setSkydivers] = useState<Skydiver[]>([]);
   const [selectedSkydiverId, setSelectedSkydiverId] = useState<string>("");
@@ -41,7 +45,7 @@ const SelectSkydiver = () => {
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        toast.error("לא נמצאו צונחים");
+        toast.error(t.noSkydivers);
         navigate("/");
         return;
       }
@@ -54,7 +58,7 @@ const SelectSkydiver = () => {
       }
     } catch (error) {
       console.error("Error fetching skydivers:", error);
-      toast.error("שגיאה בטעינת הנתונים");
+      toast.error(t.errorLoading);
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +66,7 @@ const SelectSkydiver = () => {
 
   const handleContinue = () => {
     if (!selectedSkydiverId) {
-      toast.error("נא לבחור צונח");
+      toast.error(t.pleaseSelectSkydiver);
       return;
     }
     navigate(`/review-details/${selectedSkydiverId}`);
@@ -71,7 +75,7 @@ const SelectSkydiver = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">טוען...</p>
+        <p className="text-lg">{t.loading}</p>
       </div>
     );
   }
@@ -90,17 +94,17 @@ const SelectSkydiver = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <CardTitle className="text-2xl font-bold">בחר צונח</CardTitle>
+            <CardTitle className="text-2xl font-bold">{t.selectSkydiver}</CardTitle>
           </div>
           <CardDescription>
-            נמצאו {skydivers.length} צונחים עם מספר טלפון זה
+            {t.foundSkydivers.replace('{count}', skydivers.length.toString())}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Select value={selectedSkydiverId} onValueChange={setSelectedSkydiverId}>
               <SelectTrigger className="h-12 text-lg">
-                <SelectValue placeholder="בחר את שמך" />
+                <SelectValue placeholder={t.selectName} />
               </SelectTrigger>
               <SelectContent>
                 {skydivers.map((skydiver) => (
@@ -116,7 +120,7 @@ const SelectSkydiver = () => {
             className="w-full h-12 text-lg"
             disabled={!selectedSkydiverId}
           >
-            המשך <ArrowRight className="mr-2 h-5 w-5" />
+            {t.continue} <ArrowRight className="mr-2 h-5 w-5" />
           </Button>
         </CardContent>
       </Card>

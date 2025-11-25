@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowRight, ArrowLeft } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/data/translations";
 
 interface SkydiverDetails {
   id: string;
@@ -23,6 +25,8 @@ interface SkydiverDetails {
 const ReviewDetails = () => {
   const { skydiverId } = useParams();
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const t = translations[language];
   
   const [details, setDetails] = useState<SkydiverDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +52,7 @@ const ReviewDetails = () => {
       setDetails(data);
     } catch (error) {
       console.error("Error fetching details:", error);
-      toast.error("שגיאה בטעינת הפרטים");
+      toast.error(t.errorLoadingDetails);
       navigate("/");
     } finally {
       setIsLoading(false);
@@ -76,11 +80,11 @@ const ReviewDetails = () => {
 
       if (error) throw error;
 
-      toast.success("הפרטים עודכנו בהצלחה");
+      toast.success(t.successUpdate);
       navigate(`/waiver/${skydiverId}`);
     } catch (error) {
       console.error("Error updating details:", error);
-      toast.error("שגיאה בשמירת הפרטים");
+      toast.error(t.errorSaving);
     } finally {
       setIsSaving(false);
     }
@@ -89,7 +93,7 @@ const ReviewDetails = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">טוען...</p>
+        <p className="text-lg">{t.loading}</p>
       </div>
     );
   }
@@ -105,18 +109,18 @@ const ReviewDetails = () => {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(`/select-skydiver?phone=${details.phone_number}`)}
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <CardTitle className="text-2xl">בדיקת פרטים אישיים</CardTitle>
+            <CardTitle className="text-2xl">{t.reviewDetails}</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="full_name">שם מלא</Label>
+                <Label htmlFor="full_name">{t.fullName}</Label>
                 <Input
                   id="full_name"
                   value={details.full_name}
@@ -126,7 +130,7 @@ const ReviewDetails = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="id_number">תעודת זהות</Label>
+                <Label htmlFor="id_number">{t.idNumber}</Label>
                 <Input
                   id="id_number"
                   value={details.id_number || ""}
@@ -136,7 +140,7 @@ const ReviewDetails = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone_number">טלפון</Label>
+                <Label htmlFor="phone_number">{t.phone}</Label>
                 <Input
                   id="phone_number"
                   value={details.phone_number}
@@ -146,7 +150,7 @@ const ReviewDetails = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">אימייל</Label>
+                <Label htmlFor="email">{t.email}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -157,7 +161,7 @@ const ReviewDetails = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="weight">משקל (ק"ג)</Label>
+                <Label htmlFor="weight">{t.weight}</Label>
                 <Input
                   id="weight"
                   type="number"
@@ -169,7 +173,7 @@ const ReviewDetails = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="date_of_birth">תאריך לידה</Label>
+                <Label htmlFor="date_of_birth">{t.dateOfBirth}</Label>
                 <Input
                   id="date_of_birth"
                   type="date"
@@ -180,7 +184,7 @@ const ReviewDetails = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="emergency_contact_name">איש קשר חירום</Label>
+                <Label htmlFor="emergency_contact_name">{t.emergencyContactName}</Label>
                 <Input
                   id="emergency_contact_name"
                   value={details.emergency_contact_name || ""}
@@ -189,7 +193,7 @@ const ReviewDetails = () => {
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="emergency_contact_phone">טלפון איש קשר חירום</Label>
+                <Label htmlFor="emergency_contact_phone">{t.emergencyContactPhone}</Label>
                 <Input
                   id="emergency_contact_phone"
                   type="tel"
@@ -205,7 +209,7 @@ const ReviewDetails = () => {
               className="w-full h-12 text-lg mt-6"
               disabled={isSaving}
             >
-              {isSaving ? "שומר..." : "המשך"} <ArrowRight className="mr-2 h-5 w-5" />
+              {isSaving ? t.saving : t.continue} <ArrowRight className="mr-2 h-5 w-5" />
             </Button>
           </form>
         </CardContent>
