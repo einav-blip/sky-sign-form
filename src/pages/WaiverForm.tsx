@@ -24,6 +24,7 @@ const WaiverForm = () => {
   });
   const [skydiverName, setSkydiverName] = useState("");
   const [idNumber, setIdNumber] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +34,7 @@ const WaiverForm = () => {
       try {
         const { data, error } = await supabase
           .from("skydivers")
-          .select("full_name, id_number")
+          .select("full_name, id_number, date_of_birth")
           .eq("id", skydiverId)
           .single();
 
@@ -41,6 +42,7 @@ const WaiverForm = () => {
         if (data) {
           setSkydiverName(data.full_name);
           setIdNumber(data.id_number || "");
+          setDateOfBirth(data.date_of_birth || "");
         }
       } catch (error) {
         console.error("Error fetching skydiver:", error);
@@ -81,15 +83,19 @@ const WaiverForm = () => {
   // Replace signature line based on language
   let waiverContent = waiverText.waiverDeclaration.content;
   
-  // For Hebrew, replace the specific signature line
+  // For Hebrew, replace the specific signature line and date of birth
   if (language === 'he') {
     waiverContent = waiverContent.replace(
       "אני הח\"מ _______",
       `אני הח"מ ${skydiverName}${idNumber ? `, ת.ז ${idNumber}` : ""}`
     );
+    waiverContent = waiverContent.replace(
+      "תאריך לידה: __________________",
+      `תאריך לידה: ${dateOfBirth}`
+    );
   } else {
     // For other languages, add signature info at the beginning
-    waiverContent = `I, the undersigned: ${skydiverName}${idNumber ? `, ID: ${idNumber}` : ""}\n\n${waiverContent}`;
+    waiverContent = `I, the undersigned: ${skydiverName}${idNumber ? `, ID: ${idNumber}` : ""}${dateOfBirth ? `, Date of Birth: ${dateOfBirth}` : ""}\n\n${waiverContent}`;
   }
 
   return (
