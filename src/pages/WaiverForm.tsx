@@ -4,12 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import { adultWaiverText } from "@/data/waiverTexts";
+import { waiverTexts } from "@/data/waiverTexts";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/data/translations";
 
 const WaiverForm = () => {
   const { skydiverId } = useParams();
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const t = translations[language];
+  const waiverText = waiverTexts[language];
+  
   const [signature, setSignature] = useState(() => {
     // Load saved signature from localStorage
     const saved = localStorage.getItem(`waiver_signature_${skydiverId}`);
@@ -37,7 +43,7 @@ const WaiverForm = () => {
         }
       } catch (error) {
         console.error("Error fetching skydiver:", error);
-        toast.error("שגיאה בטעינת פרטי הצונח");
+        toast.error(t.errorLoadingDetails);
       } finally {
         setIsLoading(false);
       }
@@ -48,7 +54,7 @@ const WaiverForm = () => {
 
   const handleContinue = () => {
     if (!signature) {
-      toast.error("נא לחתום על הטופס");
+      toast.error(t.signature);
       return;
     }
     // Save signature to localStorage
@@ -66,16 +72,24 @@ const WaiverForm = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">טוען...</p>
+        <p className="text-lg">{t.loading}</p>
       </div>
     );
   }
 
-  // Replace the underline with the skydiver's name and ID number
-  const waiverContent = adultWaiverText.waiverDeclaration.content.replace(
-    "אני הח\"מ: _______________________________",
-    `אני הח"מ: ${skydiverName}, ת.ז ${idNumber || "_______"}`
-  );
+  // Replace signature line based on language
+  let waiverContent = waiverText.waiverDeclaration.content;
+  
+  // For Hebrew, replace the specific signature line
+  if (language === 'he') {
+    waiverContent = waiverContent.replace(
+      "אני הח\"מ _______",
+      `אני הח"מ ${skydiverName}${idNumber ? `, ת.ז ${idNumber}` : ""}`
+    );
+  } else {
+    // For other languages, add signature info at the beginning
+    waiverContent = `I, the undersigned: ${skydiverName}${idNumber ? `, ID: ${idNumber}` : ""}\n\n${waiverContent}`;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-4 py-8">
@@ -90,23 +104,23 @@ const WaiverForm = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <CardTitle className="text-2xl">{adultWaiverText.personalDetails.title}</CardTitle>
+            <CardTitle className="text-2xl">{waiverText.personalDetails.title}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-8">
           {/* Risk Statistics Section */}
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-destructive">
-              {adultWaiverText.riskStatistics.title}
+              {waiverText.riskStatistics.title}
             </h2>
             <div className="prose prose-sm max-w-none bg-muted/50 p-6 rounded-lg max-h-96 overflow-y-auto whitespace-pre-wrap">
-              {adultWaiverText.riskStatistics.content}
+              {waiverText.riskStatistics.content}
             </div>
           </div>
 
           {/* Waiver Declaration Section */}
           <div className="space-y-4 border-t pt-8">
-            <h2 className="text-xl font-bold">{adultWaiverText.waiverDeclaration.title}</h2>
+            <h2 className="text-xl font-bold">{waiverText.waiverDeclaration.title}</h2>
             <div className="prose prose-sm max-w-none bg-muted/50 p-6 rounded-lg max-h-96 overflow-y-auto whitespace-pre-wrap">
               {waiverContent}
             </div>
@@ -114,11 +128,11 @@ const WaiverForm = () => {
 
           {/* Signature Section */}
           <div className="space-y-4 border-t pt-8">
-            <h3 className="text-lg font-semibold">חתימה</h3>
+            <h3 className="text-lg font-semibold">{t.signature}</h3>
             <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-4 min-h-[120px] bg-background">
               <input
                 type="text"
-                placeholder="החתימה שלך כאן (זמני - יוחלף בקומפוננט חתימה)"
+                placeholder={t.signature}
                 value={signature}
                 onChange={(e) => setSignature(e.target.value)}
                 className="w-full text-2xl font-signature text-center bg-transparent outline-none"
@@ -131,7 +145,7 @@ const WaiverForm = () => {
             className="w-full h-12 text-lg mt-6"
             disabled={!signature}
           >
-            המשך <ArrowRight className="mr-2 h-5 w-5" />
+            {t.continue} <ArrowRight className="mr-2 h-5 w-5" />
           </Button>
         </CardContent>
       </Card>
