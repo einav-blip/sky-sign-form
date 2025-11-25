@@ -8,6 +8,7 @@ import { waiverTexts } from "@/data/waiverTexts";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translations } from "@/data/translations";
+import SignaturePad from "@/components/SignaturePad";
 
 const WaiverForm = () => {
   const { skydiverId } = useParams();
@@ -129,15 +130,11 @@ const WaiverForm = () => {
           {/* Signature Section */}
           <div className="space-y-4 border-t pt-8">
             <h3 className="text-lg font-semibold">{t.signature}</h3>
-            <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-4 min-h-[120px] bg-background">
-              <input
-                type="text"
-                placeholder={t.signature}
-                value={signature}
-                onChange={(e) => setSignature(e.target.value)}
-                className="w-full text-2xl font-signature text-center bg-transparent outline-none"
-              />
-            </div>
+            <SignaturePad
+              value={signature}
+              onChange={setSignature}
+              placeholder={t.signature}
+            />
           </div>
 
           <Button 
