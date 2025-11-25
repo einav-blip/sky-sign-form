@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import { Button } from "@/components/ui/button";
 import { Eraser } from "lucide-react";
@@ -11,12 +11,28 @@ interface SignaturePadProps {
 
 const SignaturePad = ({ value, onChange, placeholder }: SignaturePadProps) => {
   const sigCanvas = useRef<SignatureCanvas>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [canvasSize, setCanvasSize] = useState({ width: 400, height: 200 });
+
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.offsetWidth;
+        setCanvasSize({ width, height: 200 });
+      }
+    };
+
+    updateCanvasSize();
+    window.addEventListener("resize", updateCanvasSize);
+    
+    return () => window.removeEventListener("resize", updateCanvasSize);
+  }, []);
 
   useEffect(() => {
     if (value && sigCanvas.current) {
       sigCanvas.current.fromDataURL(value);
     }
-  }, []);
+  }, [canvasSize]);
 
   const handleEnd = () => {
     if (sigCanvas.current) {
@@ -34,16 +50,21 @@ const SignaturePad = ({ value, onChange, placeholder }: SignaturePadProps) => {
 
   return (
     <div className="space-y-2">
-      <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg bg-background overflow-hidden">
+      <div 
+        ref={containerRef}
+        className="border-2 border-dashed border-muted-foreground/30 rounded-lg bg-background overflow-hidden"
+      >
         <SignatureCanvas
           ref={sigCanvas}
           canvasProps={{
-            className: "w-full h-[200px] touch-none",
-            style: { touchAction: 'none' }
+            width: canvasSize.width,
+            height: canvasSize.height,
+            className: "touch-none cursor-crosshair",
+            style: { touchAction: 'none', display: 'block' }
           }}
           onEnd={handleEnd}
-          backgroundColor="transparent"
-          penColor="hsl(var(--foreground))"
+          backgroundColor="rgba(255, 255, 255, 0)"
+          penColor="#000000"
         />
       </div>
       <div className="flex items-center justify-between">
