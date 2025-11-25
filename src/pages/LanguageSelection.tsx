@@ -21,7 +21,9 @@ const LanguageSelection = () => {
     { code: 'en', name: 'English', nativeName: 'English' },
     { code: 'ru', name: 'Russian', nativeName: 'Русский' },
     { code: 'fr', name: 'French', nativeName: 'Français' },
-    { code: 'ar', name: 'Arabic', nativeName: 'العربية' }
+    { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
+    { code: 'it', name: 'Italian', nativeName: 'Italiano' },
+    { code: 'es', name: 'Spanish', nativeName: 'Español' }
   ];
 
   const handleLanguageSelect = (langCode: Language) => {

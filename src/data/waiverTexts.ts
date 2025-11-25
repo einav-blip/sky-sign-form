@@ -240,6 +240,102 @@ Je déclare avoir lu et compris ce qui précède et il m'est clair que j'ai le d
         "هل تعرضت لحادث أو إصابة في السنوات الثلاث الماضية؟"
       ]
     }
+  },
+  it: {
+    personalDetails: {
+      title: "Dettagli personali: Dichiarazione del paracadutista prima del salto in tandem",
+      fields: ["Cognome", "Nome", "Cellulare", "Email", "Città", "Telefono", "CAP", "Via", "Numero"]
+    },
+    riskStatistics: {
+      title: "Rischi del paracadutismo in tandem - Statistiche sugli infortuni",
+      content: `Generale - Il paracadutismo da un aereo comporta rischi che possono causare lesioni gravi, disabilità grave e morte. Incidenti e lesioni possono verificarsi a causa di vari fattori in diverse fasi dell'attività.
+
+È importante sapere che incidenti o lesioni si verificano anche quando il volo e il salto sono stati eseguiti secondo tutte le istruzioni, procedure, requisiti legali e regolamenti.
+
+Statistiche mondiali: Su circa 750.000 salti in tandem, viene segnalato un decesso. Nel paracadutismo in tandem, le lesioni si verificano circa 1 su 1.100 salti.
+
+Dichiaro di aver letto e compreso quanto sopra ed è chiaro che ho il diritto di scegliere di cancellare o posticipare il salto senza alcun obbligo finanziario.`
+    },
+    waiverDeclaration: {
+      title: "Dichiarazione di rinuncia e liberatoria",
+      content: `• Ho letto le statistiche sugli infortuni e le informazioni sui rischi
+• Capisco che il paracadutismo comporta alti rischi
+• Sono consapevole di tutti i rischi e li accetto
+• Rinuncio a qualsiasi reclamo contro la società
+• Accetto la piena responsabilità per qualsiasi danno`
+    },
+    healthDeclaration: {
+      title: "Dichiarazione sanitaria per paracadutista in tandem",
+      intro: "Per evitare rischi inutili, si prega di compilare la dichiarazione sanitaria e dettagliare anche i casi che non sembrano significativi.",
+      questions: [
+        "Soffri attualmente di qualche malattia?",
+        "Lussazione di ginocchio/spalla",
+        "Fratture o distorsioni",
+        "Problemi alla schiena e allo scheletro",
+        "Ernia del disco o protrusione discale",
+        "Malattie legate alle ossa",
+        "Malattie dell'orecchio",
+        "Mal di mare",
+        "Perdita di coscienza",
+        "Assunzione di farmaci",
+        "Qualsiasi disabilità",
+        "Sei stato ricoverato negli ultimi tre anni?",
+        "Sei sotto l'influenza di alcol e/o droghe?",
+        "Hai fatto immersioni subacquee nelle ultime 24 ore?",
+        "Qualsiasi altro problema medico/mentale/neurologico",
+        "Sei attualmente incinta?",
+        "Hai partorito negli ultimi tre mesi?",
+        "Hai avuto un incidente o un infortunio negli ultimi tre anni?"
+      ]
+    }
+  },
+  es: {
+    personalDetails: {
+      title: "Detalles personales: Declaración del paracaidista antes del salto en tándem",
+      fields: ["Apellido", "Nombre", "Móvil", "Correo electrónico", "Ciudad", "Teléfono", "Código postal", "Calle", "Número"]
+    },
+    riskStatistics: {
+      title: "Riesgos del paracaidismo en tándem - Estadísticas de lesionados",
+      content: `General - El paracaidismo desde un avión implica riesgos que pueden resultar en lesiones graves, discapacidad severa y muerte. Los accidentes y lesiones pueden ocurrir debido a varios factores en diferentes etapas de la actividad.
+
+Es importante saber que los accidentes o lesiones ocurren incluso cuando el vuelo y el salto se realizaron de acuerdo con todas las instrucciones, procedimientos, requisitos legales y regulaciones.
+
+Estadísticas mundiales: De aproximadamente 750,000 saltos en tándem, se reporta una fatalidad. En paracaidismo en tándem, las lesiones ocurren aproximadamente en 1 de cada 1,100 saltos.
+
+Declaro que he leído y entendido lo anterior y me queda claro que tengo derecho a elegir cancelar o posponer el salto sin ninguna obligación financiera.`
+    },
+    waiverDeclaration: {
+      title: "Declaración de renuncia y liberación",
+      content: `• He leído las estadísticas de lesionados y la información sobre riesgos
+• Entiendo que el paracaidismo implica alto riesgo
+• Estoy consciente de todos los riesgos y los acepto
+• Renuncio a todas las reclamaciones contra la empresa
+• Acepto la responsabilidad total por cualquier daño`
+    },
+    healthDeclaration: {
+      title: "Declaración de salud para paracaidista en tándem",
+      intro: "Para evitar riesgos innecesarios, por favor complete la declaración de salud y detalle incluso casos que no le parezcan significativos.",
+      questions: [
+        "¿Sufre actualmente de alguna enfermedad?",
+        "Dislocación de rodilla/hombro",
+        "Fracturas o esguinces",
+        "Problemas de espalda y esqueleto",
+        "Hernia de disco o abombamiento discal",
+        "Enfermedades relacionadas con los huesos",
+        "Enfermedades del oído",
+        "Mareo por movimiento",
+        "Pérdida de consciencia",
+        "Toma de medicamentos",
+        "Cualquier discapacidad",
+        "¿Ha sido hospitalizado en los últimos tres años?",
+        "¿Está bajo la influencia de alcohol y/o drogas?",
+        "¿Ha buceado con equipo en las últimas 24 horas?",
+        "Cualquier otro problema médico/mental/neurológico",
+        "¿Está embarazada actualmente?",
+        "¿Ha dado a luz en los últimos tres meses?",
+        "¿Ha tenido un accidente o lesión en los últimos tres años?"
+      ]
+    }
   }
 };
 
