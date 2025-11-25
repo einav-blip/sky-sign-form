@@ -55,6 +55,19 @@ const MedicalQuestionnaire = () => {
     }))
   );
 
+  // Update question texts when language changes
+  useEffect(() => {
+    setQuestions(prev => 
+      healthDeclaration.questions.map((q, idx) => ({
+        id: String(idx + 1),
+        question: q,
+        answer: prev[idx]?.answer || "",
+        details: prev[idx]?.details || "",
+        date: prev[idx]?.date || ""
+      }))
+    );
+  }, [language]);
+
   const updateQuestion = (id: string, field: keyof MedicalQuestion, value: string) => {
     setQuestions(prev => {
       const updated = prev.map(q => 
