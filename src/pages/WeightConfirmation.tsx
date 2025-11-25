@@ -8,10 +8,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowRight, ArrowLeft, AlertTriangle } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translations } from "@/data/translations";
 
 const WeightConfirmation = () => {
   const { skydiverId } = useParams();
   const navigate = useNavigate();
+  const { language } = useLanguage();
+  const t = translations[language];
   const [weight, setWeight] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -31,7 +35,7 @@ const WeightConfirmation = () => {
       setWeight(data.weight || 0);
     } catch (error) {
       console.error("Error fetching weight:", error);
-      toast.error("שגיאה בטעינת המשקל");
+      toast.error(t.errorLoadingWeight);
     } finally {
       setIsLoading(false);
     }
@@ -39,7 +43,7 @@ const WeightConfirmation = () => {
 
   const handleConfirm = async () => {
     if (!weight || weight <= 0) {
-      toast.error("נא להזין משקל תקין");
+      toast.error(t.invalidWeight);
       return;
     }
 
@@ -54,14 +58,14 @@ const WeightConfirmation = () => {
       navigate(`/medical-questionnaire/${skydiverId}`);
     } catch (error) {
       console.error("Error updating weight:", error);
-      toast.error("שגיאה בשמירת המשקל");
+      toast.error(t.errorSavingWeight);
     }
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg">טוען...</p>
+        <p className="text-lg">{t.loading}</p>
       </div>
     );
   }
@@ -79,19 +83,19 @@ const WeightConfirmation = () => {
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <CardTitle className="text-2xl text-center flex-1">אישור משקל</CardTitle>
+            <CardTitle className="text-2xl text-center flex-1">{t.confirmWeight}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <Alert variant="destructive">
             <AlertTriangle className="h-5 w-5" />
             <AlertDescription className="text-base font-semibold">
-              חשוב מאוד! המשקל חייב להיות מדויק לצורך בטיחות הצניחה
+              {t.weightWarning}
             </AlertDescription>
           </Alert>
 
           <div className="space-y-2">
-            <Label htmlFor="weight" className="text-lg">המשקל שלך (ק"ג)</Label>
+            <Label htmlFor="weight" className="text-lg">{t.yourWeight}</Label>
             <Input
               id="weight"
               type="number"
@@ -107,7 +111,7 @@ const WeightConfirmation = () => {
             onClick={handleConfirm} 
             className="w-full h-12 text-lg"
           >
-            אישור והמשך <ArrowRight className="mr-2 h-5 w-5" />
+            {t.confirmAndContinue} <ArrowRight className="mr-2 h-5 w-5" />
           </Button>
         </CardContent>
       </Card>
