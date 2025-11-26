@@ -52,9 +52,16 @@ const SelectSkydiver = () => {
 
       setSkydivers(data);
       
-      // If only one skydiver, auto-select and navigate
+      // If only one skydiver, check for pending medical notes first
       if (data.length === 1) {
-        navigate(`/review-details/${data[0].id}`);
+        const skydiverId = data[0].id;
+        const hasPendingNotes = await checkPendingMedicalNotes(skydiverId);
+        
+        if (hasPendingNotes) {
+          navigate(`/medical-notes-signature/${skydiverId}`);
+        } else {
+          navigate(`/review-details/${skydiverId}`);
+        }
       }
     } catch (error) {
       console.error("Error fetching skydivers:", error);
@@ -64,12 +71,49 @@ const SelectSkydiver = () => {
     }
   };
 
-  const handleContinue = () => {
+  const checkPendingMedicalNotes = async (skydiverId: string): Promise<boolean> => {
+    try {
+      // Get the latest waiver submission that requires medical review
+      const { data: submission } = await supabase
+        .from("waiver_submissions")
+        .select("id")
+        .eq("skydiver_id", skydiverId)
+        .eq("requires_medical_review", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!submission) return false;
+
+      // Check if there are medical notes waiting for customer signature
+      const { data: notes } = await supabase
+        .from("medical_notes")
+        .select("customer_signature")
+        .eq("waiver_submission_id", submission.id)
+        .maybeSingle();
+
+      // Return true if notes exist but not yet signed by customer
+      return notes !== null && notes.customer_signature === null;
+    } catch (error) {
+      console.error("Error checking pending medical notes:", error);
+      return false;
+    }
+  };
+
+  const handleContinue = async () => {
     if (!selectedSkydiverId) {
       toast.error(t.pleaseSelectSkydiver);
       return;
     }
-    navigate(`/review-details/${selectedSkydiverId}`);
+
+    // Check for pending medical notes before continuing
+    const hasPendingNotes = await checkPendingMedicalNotes(selectedSkydiverId);
+    
+    if (hasPendingNotes) {
+      navigate(`/medical-notes-signature/${selectedSkydiverId}`);
+    } else {
+      navigate(`/review-details/${selectedSkydiverId}`);
+    }
   };
 
   if (isLoading) {

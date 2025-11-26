@@ -12,6 +12,7 @@ import WaiverForm from "./pages/WaiverForm";
 import WeightConfirmation from "./pages/WeightConfirmation";
 import MedicalQuestionnaire from "./pages/MedicalQuestionnaire";
 import Completion from "./pages/Completion";
+import MedicalNotesSignature from "./pages/MedicalNotesSignature";
 import CRMDashboard from "./pages/CRMDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/weight-confirmation/:skydiverId" element={<WeightConfirmation />} />
             <Route path="/medical-questionnaire/:skydiverId" element={<MedicalQuestionnaire />} />
             <Route path="/completion/:skydiverId" element={<Completion />} />
+            <Route path="/medical-notes-signature/:skydiverId" element={<MedicalNotesSignature />} />
             <Route path="/crm" element={<CRMDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
